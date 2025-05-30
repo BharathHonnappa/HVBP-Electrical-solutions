@@ -1,4 +1,3 @@
-# HVBP-Electrical-solutions
 HVBP Electrical Solutions Chat App
 
 Welcome to the HVBP Electrical Solutions Chat App! It's an interactive and fun way for users to chat with a bot, featuring a beautiful sunset gradient background, smooth animations, and an engaging design.
