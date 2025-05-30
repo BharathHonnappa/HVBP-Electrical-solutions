@@ -1,5 +1,15 @@
 <?php
 session_start();
+
+$timeout_duration = 600;
+if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity']) > $timeout_duration) {
+    session_unset();
+    session_destroy();
+    header("Location: login.html");
+    exit();
+}
+$_SESSION['last_activity'] = time();
+
 if (!isset($_SESSION['username'])) {
     header("Location: login.html");
     exit();
@@ -16,8 +26,10 @@ if (!isset($_SESSION['username'])) {
 </head>
 <body>
     <div class="container">
-        <h2>Welcome, <?php echo $_SESSION['name']; ?>!</h2>
-        <a href="chatbot.html">Click here to Go to Chatbot</a>
+        <h2>Welcome, <?php echo htmlspecialchars($_SESSION['name']); ?>!</h2>
+        <p>This is your personalized dashboard.</p>
+        <a href="chatbot.html">Go to Chatbot</a><br>
+        <a href="logout.php">Logout</a>
     </div>
 </body>
 </html>
