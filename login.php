@@ -1,13 +1,21 @@
 <?php
+ob_start();
 session_start();
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 include 'database.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = $_POST['username'];
+    $username = trim($_POST['username']);
     $password = $_POST['password'];
 
-    $sql = "SELECT * FROM users WHERE username='$username'";
-    $result = $conn->query($sql);
+    $stmt = $conn->prepare("SELECT id, name, phone, country, address, username, password FROM users WHERE username = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $stmt->close();
 
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
@@ -19,14 +27,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['country'] = $row['country'];
             $_SESSION['address'] = $row['address'];
 
-            header("Location: dashboard.php");  // Redirect to dashboard
+            session_regenerate_id(true);
+            $_SESSION['last_activity'] = time();
+
+            header("Location: dashboard.php");
             exit();
         } else {
-            echo "Invalid password!";
+            $_SESSION['login_error'] = "Invalid username or password.";
+            header("Location: login.html");
+            exit();
         }
     } else {
-        echo "User not found!";
+        $_SESSION['login_error'] = "Invalid username or password.";
+        header("Location: login.html");
+        exit();
     }
 }
 $conn->close();
-?>
+ob_end_flush();
